@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import React, { useContext, useEffect, useMemo } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import purchaseApi from 'src/apis/purchase.api'
 import Button from 'src/components/Button'
 import QuantityController from 'src/components/QuantityController'
@@ -42,6 +42,7 @@ export default function Cart() {
       refetch()
     }
   })
+  const navigate = useNavigate()
   const location = useLocation()
   const choosenPurchaseIdFromLocation = (location.state as { purchaseId: string } | null)?.purchaseId
   const purchasesInCart = purchasesInCartData?.data.data
@@ -134,11 +135,18 @@ export default function Cart() {
 
   const handleBuyPurchases = () => {
     if (checkedPurchases.length > 0) {
-      const body = checkedPurchases.map((purchase) => ({
-        product_id: purchase.product._id,
-        buy_count: purchase.buy_count
-      }))
-      buyProductsMutation.mutate(body)
+      // const body = checkedPurchases.map((purchase) => ({
+      //   product_id: purchase.product._id,
+      //   buy_count: purchase.buy_count
+      // }))
+      // buyProductsMutation.mutate(body)
+      refetch()
+      navigate({pathname: path.checkout})
+    } else {
+      toast.error('Vui lòng chọn sản phẩm để mua', {
+        position: 'top-center',
+        autoClose: 1000
+      })
     }
   }
 
